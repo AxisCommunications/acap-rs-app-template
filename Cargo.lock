@@ -222,15 +222,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
-name = "hello_world"
-version = "1.0.0"
-dependencies = [
- "env_logger",
- "log",
- "syslog",
-]
-
-[[package]]
 name = "home"
 version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -312,6 +303,7 @@ dependencies = [
 [[package]]
 name = "licensekey"
 version = "0.0.0"
+source = "git+https://github.com/AxisCommunications/acap-rs.git#802ca73153c8094dadaa7eb9d4c4ff3a9527dc47"
 dependencies = [
  "glib-sys",
  "libc",
@@ -322,6 +314,7 @@ dependencies = [
 [[package]]
 name = "licensekey-sys"
 version = "0.0.0"
+source = "git+https://github.com/AxisCommunications/acap-rs.git#802ca73153c8094dadaa7eb9d4c4ff3a9527dc47"
 dependencies = [
  "bindgen",
  "pkg-config",
@@ -331,10 +324,15 @@ dependencies = [
 name = "licensekey_handler"
 version = "1.0.0"
 dependencies = [
+ "bindgen",
  "env_logger",
+ "glib-sys",
+ "libc",
  "licensekey",
  "log",
+ "pkg-config",
  "syslog",
+ "thiserror",
 ]
 
 [[package]]

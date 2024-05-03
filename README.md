@@ -1,11 +1,12 @@
-# ACAP for Rust
-
-_Easy and safe [ACAP] apps using [Rust]_
+# Example app using ACAP and Rust
 
 > [!IMPORTANT]
 > This project is an experiment provided "as is".
 > While we strive to maintain it, there's no guarantee of ongoing support, and it may become unmaintained in the future.
 > Your contributions are appreciated, and feel free to fork and continue the journey if needed.
+
+This is a template that can be used to create a new app using ACAP and Rust.
+To contribute to the crates that this template uses, please see [acap-rs](https://github.com/AxisCommunications/acap-rs).
 
 ## Quickstart guide
 
@@ -22,28 +23,14 @@ source ./init_env.sh
 make sync_env
 ```
 
-Build the `hello_world` example and create `.eap` files in the `target/acap/` directory like
+Build the app and create `.eap` files in the `target/acap/` directory like
 
 ```sh
-PACKAGE=hello_world make build
+make build
 ```
 
-This works with any of the [example applications](#example-applications).
-
 Other important workflows are documented in the [Makefile](./Makefile) and can be listed with `make help`.
-
-## Example applications
-
-Below is the list of examples available in the repository.
-
-* [`hello_world`](apps/hello_world/src/main.rs)
-: A simple "Hello, World!" application.
-* [`licensekey_handler`](apps/licensekey_handler/src/main.rs)
-: An example that illustrates how to check the licensekey status.
 
 ## License
 
 [MIT](LICENSE)
-
-[ACAP]: https://axiscommunications.github.io/acap-documentation/
-[Rust]: https://doc.rust-lang.org/

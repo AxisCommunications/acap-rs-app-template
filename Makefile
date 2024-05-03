@@ -7,7 +7,8 @@
 # Name of package containing the app to be built.
 # Rust does not enforce that the path to the package matches the package name, but
 # this makefile does to keep things simple.
-PACKAGE ?= hello_world
+# Keep in sync with `package.name` from `Cargo.toml`
+PACKAGE ?= licensekey_handler
 
 # The architecture that will be assumed when interacting with the device.
 ARCH ?= aarch64
@@ -202,11 +203,11 @@ target/%/$(PACKAGE)/_envoy: target/%/$(PACKAGE)/$(PACKAGE) target/%/$(PACKAGE)/m
 	$(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && acap-build --build no-build ."
 	touch $@
 
-target/%/$(PACKAGE)/manifest.json: apps/$(PACKAGE)/manifest.json
+target/%/$(PACKAGE)/manifest.json: manifest.json
 	mkdir -p $(dir $@)
 	cp $< $@
 
-target/%/$(PACKAGE)/LICENSE: apps/$(PACKAGE)/LICENSE
+target/%/$(PACKAGE)/LICENSE: LICENSE
 	mkdir -p $(dir $@)
 	cp $< $@
 
