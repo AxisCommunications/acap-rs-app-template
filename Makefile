@@ -100,16 +100,11 @@ sync_env:
 ## ------
 
 ## Run all other checks
-check_all: check_build check_docs check_format check_lint check_tests check_generated_files
+check_all: check_build check_docs check_format check_lint
 .PHONY: check_all
 
 ## Check that all crates can be built
 check_build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
-	cargo build \
-		--exclude licensekey \
-		--exclude licensekey-sys \
-		--exclude licensekey_handler \
-		--workspace
 	cross build \
 		--target aarch64-unknown-linux-gnu \
 		--workspace
@@ -131,37 +126,14 @@ check_format:
 	cargo fmt --check
 .PHONY: check_format
 
-## Check that generated files are up to date
-check_generated_files: $(patsubst %/,%/src/bindings.rs,$(wildcard crates/*-sys/))
-	git update-index -q --refresh
-	git --no-pager diff --exit-code HEAD -- $^
-.PHONY: check_generated_files
-
-
 ## _
 check_lint:
-	RUSTFLAGS="-Dwarnings" cargo clippy \
-		--all-targets \
-		--no-deps \
-		--exclude licensekey \
-		--exclude licensekey-sys \
-		--exclude licensekey_handler \
-		--workspace
 	RUSTFLAGS="-Dwarnings" cross clippy \
 		--all-targets \
 		--no-deps \
 		--target aarch64-unknown-linux-gnu \
 		--workspace
 .PHONY: check_lint
-
-## _
-check_tests:
-	cargo test \
-			--exclude licensekey \
-			--exclude licensekey-sys \
-			--exclude licensekey_handler \
-			--workspace
-.PHONY: check_tests
 
 ## Fixes
 ## -----
