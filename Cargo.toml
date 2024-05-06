@@ -9,7 +9,7 @@ bindgen = "0.69.4"
 env_logger = "0.11.2"
 glib-sys = "0.19.5"
 libc = "0.2.153"
-licensekey = { git = "https://github.com/AxisCommunications/acap-rs.git" }
+licensekey = { git = "https://github.com/AxisCommunications/acap-rs.git", rev="802ca73153c8094dadaa7eb9d4c4ff3a9527dc47" }
 log = "0.4.20"
 pkg-config = "0.3.30"
 syslog = "6.1.1"
