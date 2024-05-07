@@ -154,9 +154,6 @@ constraints.txt: requirements.txt
 		--output-file $@ \
 		$^
 
-crates/%-sys/src/bindings.rs: FORCE
-	cp $(firstword $(wildcard target/*/*/build/$*-sys-*/out/bindings.rs)) $@
-
 # Stage the files that will be packaged outside the source tree to avoid
 # * cluttering the source tree and `.gitignore` with build artifacts, and
 # * having the same file be built for different targets at different times.
