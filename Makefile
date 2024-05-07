@@ -109,12 +109,10 @@ check_build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
 
 ## Check that docs can be built
 check_docs:
-	RUSTDOCFLAGS="-Dwarnings" cargo doc
 	RUSTDOCFLAGS="-Dwarnings" cross doc \
 		--document-private-items \
 		--no-deps \
-		--target aarch64-unknown-linux-gnu \
-		--workspace
+		--target aarch64-unknown-linux-gnu
 .PHONY: check_docs
 
 ## _
@@ -127,8 +125,7 @@ check_lint:
 	RUSTFLAGS="-Dwarnings" cross clippy \
 		--all-targets \
 		--no-deps \
-		--target aarch64-unknown-linux-gnu \
-		--workspace
+		--target aarch64-unknown-linux-gnu
 .PHONY: check_lint
 
 ## Fixes
