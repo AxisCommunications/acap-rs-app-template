@@ -41,6 +41,7 @@ DOCKER_RUN = docker run \
 --user $(shell id -u):$(shell id -g) \
 axisecp/acap-native-sdk:1.12-$(ARCH)-ubuntu22.04
 
+
 ## Verbs
 ## =====
 
@@ -51,8 +52,6 @@ help:
 build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
 	mkdir -p target/acap
 	cp $(patsubst %/_envoy,%/*.eap,$^) target/acap
-
-
 
 ## Install <PACKAGE> on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 install:
