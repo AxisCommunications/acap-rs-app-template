@@ -105,10 +105,6 @@ check_all: check_build check_docs check_format check_lint
 
 ## Check that all crates can be built
 check_build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
-	cross build \
-		--target aarch64-unknown-linux-gnu \
-		--workspace
-
 .PHONY: check_build
 
 ## Check that docs can be built
