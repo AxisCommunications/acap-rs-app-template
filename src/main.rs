@@ -10,3 +10,17 @@ fn main() {
     app_logging::init_logger();
     info!("Hello World!");
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn tautology() {
+        assert!(true)
+    }
+
+    #[test]
+    #[ignore]
+    fn contradiction() {
+        assert!(true)
+    }
+}

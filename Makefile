@@ -34,60 +34,70 @@ PASS ?= pass
 # Prevent pesky default rules from creating unexpected dependency graphs.
 .SUFFIXES: ;
 
-# Rebuild targets when marking them as phony directly is not enough.
-FORCE:;
-.PHONY: FORCE
-
-DOCKER_RUN = docker run \
---volume ${CURDIR}/target/$(ARCH)/$(PACKAGE)/:/opt/app \
---user $(shell id -u):$(shell id -g) \
-axisecp/acap-native-sdk:1.12-$(ARCH)-ubuntu22.04
+EAP_INSTALL = cd ${CURDIR}/target/$(ARCH)/$(PACKAGE)/ \
+&& cargo-acap-sdk containerize --docker-file $(CURDIR)/Dockerfile -- \
+sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) $@"
 
 
 ## Verbs
 ## =====
 
 ## Build app for all architectures
-build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
-	mkdir -p target/acap
-	cp $(patsubst %/_envoy,%/*.eap,$^) target/acap
+build:
+	cargo-acap-sdk build
 
 ## Install app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 install:
-	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) install" \
+	cargo-acap-sdk install --docker-file ${CURDIR}/Dockerfile --address $(DEVICE_IP) --password $(PASS) --target $(ARCH) \
 	| grep -v '^to start your application type$$' \
 	| grep -v '^  eap-install.sh start$$'
 
 ## Remove app from <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 remove:
-	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) remove"
+	@ $(EAP_INSTALL)
 
 ## Start app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 start:
-	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) start" \
-	| grep -v '^to stop your application type$$' \
-	| grep -v '^  eap-install.sh stop$$'
+	@ # Don't match the line endings because docker replace LF with CR + LF when given `--tty`
+	@ $(EAP_INSTALL) \
+	| grep -v '^to stop your application type' \
+	| grep -v '^  eap-install.sh stop'
 
 ## Stop app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 stop:
-	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) stop"
+	@ $(EAP_INSTALL)
 
 ## Build and run app directly on <DEVICE_IP> assuming architecture <ARCH>
-##
-## Forwards the following environment variables to the remote process:
-##
-## * `RUST_LOG`
-## * `RUST_LOG_STYLE`
 ##
 ## Prerequisites:
 ##
 ## * The app is installed on the device.
 ## * The app is stopped.
 ## * The device has SSH enabled the ssh user root configured.
-run: target/$(ARCH)/$(PACKAGE)/$(PACKAGE)
-	scp $< root@$(DEVICE_IP):/usr/local/packages/$(PACKAGE)/$(PACKAGE)
-	ssh root@$(DEVICE_IP) \
-		"cd /usr/local/packages/$(PACKAGE) && su - acap-$(PACKAGE) -s /bin/sh --preserve-environment -c '$(if $(RUST_LOG_STYLE),RUST_LOG_STYLE=$(RUST_LOG_STYLE) )$(if $(RUST_LOG),RUST_LOG=$(RUST_LOG) )./$(PACKAGE)'"
+## * The device is added to `knownhosts`.
+run:
+	cargo-acap-sdk run \
+		--docker-file $(CURDIR)/Dockerfile \
+		--password $(PASS) \
+		--target $(ARCH) \
+		--address $(DEVICE_IP) \
+		--package $(PACKAGE)
+
+## Build and execute unit tests on <DEVICE_IP> assuming architecture <ARCH>
+##
+## Prerequisites:
+##
+## * The app is installed on the device.
+## * The app is stopped.
+## * The device has SSH enabled the ssh user root configured.
+## * The device is added to `knownhosts`.
+test:
+	cargo-acap-sdk test \
+		--docker-file $(CURDIR)/Dockerfile \
+		--password $(PASS) \
+		--target $(ARCH) \
+		--address $(DEVICE_IP) \
+		--package $(PACKAGE)
 
 ## Checks
 ## ------
@@ -97,12 +107,14 @@ check_all: check_build check_docs check_format check_lint
 .PHONY: check_all
 
 ## Check that all crates can be built
-check_build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
+check_build:
+	cargo-acap-sdk build
+
 .PHONY: check_build
 
 ## Check that docs can be built
 check_docs:
-	RUSTDOCFLAGS="-Dwarnings" cross doc \
+	cargo-acap-sdk containerize --docker-file $(CURDIR)/Dockerfile --docker-env RUSTFLAGS="-Dwarnings" -- cargo doc \
 		--document-private-items \
 		--no-deps \
 		--target aarch64-unknown-linux-gnu
@@ -115,7 +127,7 @@ check_format:
 
 ## Check that the code is free of lints
 check_lint:
-	RUSTFLAGS="-Dwarnings" cross clippy \
+	cargo-acap-sdk containerize --docker-file $(CURDIR)/Dockerfile --docker-env RUSTFLAGS="-Dwarnings" -- cargo clippy \
 		--all-targets \
 		--no-deps \
 		--target aarch64-unknown-linux-gnu
@@ -137,36 +149,3 @@ fix_lint:
 
 ## Nouns
 ## =====
-
-# Stage the files that will be packaged outside the source tree to avoid
-# * cluttering the source tree and `.gitignore` with build artifacts, and
-# * having the same file be built for different targets at different times.
-# Use the `_envoy` file as a target because
-# * `.DELETE_ON_ERROR` does not work for directories, and
-# * the name of the `.eap` file is annoying to predict.
-target/%/$(PACKAGE)/_envoy: ARCH=$*
-target/%/$(PACKAGE)/_envoy: target/%/$(PACKAGE)/$(PACKAGE) target/%/$(PACKAGE)/manifest.json target/%/$(PACKAGE)/LICENSE
-	$(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && acap-build --build no-build ."
-	touch $@
-
-target/%/$(PACKAGE)/manifest.json: manifest.json
-	mkdir -p $(dir $@)
-	cp $< $@
-
-target/%/$(PACKAGE)/LICENSE: LICENSE
-	mkdir -p $(dir $@)
-	cp $< $@
-
-# The target triple and the name of the docker image do not match, so
-# at some point we need to map one to the other. It might as well be here.
-target/aarch64/$(PACKAGE)/$(PACKAGE): target/aarch64-unknown-linux-gnu/release/$(PACKAGE)
-	mkdir -p $(dir $@)
-	cp $< $@
-
-target/armv7hf/$(PACKAGE)/$(PACKAGE): target/thumbv7neon-unknown-linux-gnueabihf/release/$(PACKAGE)
-	mkdir -p $(dir $@)
-	cp $< $@
-
-# Always rebuild the executable because configuring accurate cache invalidation is annoying.
-target/%/release/$(PACKAGE): FORCE
-	cross -v build --release --target $* --package $(PACKAGE)
