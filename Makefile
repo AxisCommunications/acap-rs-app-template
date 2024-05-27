@@ -45,9 +45,6 @@ axisecp/acap-native-sdk:1.12-$(ARCH)-ubuntu22.04
 ## Verbs
 ## =====
 
-help:
-	@mkhelp print_docs $(firstword $(MAKEFILE_LIST)) help
-
 ## Build <PACKAGE> for all architectures
 build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
 	mkdir -p target/acap
@@ -90,11 +87,6 @@ run: target/$(ARCH)/$(PACKAGE)/$(PACKAGE)
 	ssh root@$(DEVICE_IP) \
 		"cd /usr/local/packages/$(PACKAGE) && su - acap-$(PACKAGE) -s /bin/sh --preserve-environment -c '$(if $(RUST_LOG_STYLE),RUST_LOG_STYLE=$(RUST_LOG_STYLE) )$(if $(RUST_LOG),RUST_LOG=$(RUST_LOG) )./$(PACKAGE)'"
 
-## Install development dependencies
-sync_env:
-	cargo install --root venv --target-dir $(CURDIR)/target cross
-	PIP_CONSTRAINT=constraints.txt pip install --requirement requirements.txt
-
 ## Checks
 ## ------
 
@@ -114,12 +106,12 @@ check_docs:
 		--target aarch64-unknown-linux-gnu
 .PHONY: check_docs
 
-## _
+## Check that the code is formatted correctly
 check_format:
 	cargo fmt --check
 .PHONY: check_format
 
-## _
+## Check that the code is free of lints
 check_lint:
 	RUSTFLAGS="-Dwarnings" cross clippy \
 		--all-targets \
@@ -130,12 +122,12 @@ check_lint:
 ## Fixes
 ## -----
 
-## _
+## Attempt to fix formatting automatically
 fix_format:
 	cargo fmt
 .PHONY: fix_format
 
-## _
+## Attempt to fix lints automatically
 fix_lint:
 	cargo clippy --fix
 .PHONY: fix_lint
@@ -143,15 +135,6 @@ fix_lint:
 
 ## Nouns
 ## =====
-
-constraints.txt: requirements.txt
-	pip-compile \
-		--allow-unsafe \
-		--no-header \
-		--quiet \
-		--strip-extras \
-		--output-file $@ \
-		$^
 
 # Stage the files that will be packaged outside the source tree to avoid
 # * cluttering the source tree and `.gitignore` with build artifacts, and

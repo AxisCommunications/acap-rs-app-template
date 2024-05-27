@@ -14,14 +14,7 @@ Ensure global prerequisites are installed:
 
 * Docker
 * Rust e.g. [using rustup](https://www.rust-lang.org/tools/install)
-* Python e.g. using [pyenv](https://github.com/pyenv/pyenv)
-
-Create, activate and populate the local development environment like
-
-```sh
-source ./init_env.sh
-make sync_env
-```
+* Cross e.g. like `cargo install cross`
 
 Build the app and create `.eap` files in the `target/acap/` directory like
 
@@ -29,7 +22,7 @@ Build the app and create `.eap` files in the `target/acap/` directory like
 make build
 ```
 
-Other important workflows are documented in the [Makefile](./Makefile) and can be listed with `make help`.
+Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
 
 ## License
 
