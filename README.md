@@ -23,6 +23,29 @@ make build
 ```
 
 Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
+If Python package `mkhelp==0.2.1` is installed, they can be summarized like
+
+```console
+$ mkhelp print-docs Makefile help
+Verbs:
+   build: Build app for all architectures
+ install: Install app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+  remove: Remove app from <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+   start: Start app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+    stop: Stop app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+     run: Build and run app directly on <DEVICE_IP> assuming architecture <ARCH>
+
+Checks:
+    check_all: Run all other checks
+  check_build: Check that all crates can be built
+   check_docs: Check that docs can be built
+ check_format: Check that the code is formatted correctly
+   check_lint: Check that the code is free of lints
+
+Fixes:
+ fix_format: Attempt to fix formatting automatically
+   fix_lint: Attempt to fix lints automatically
+```
 
 ## License
 
