@@ -1,4 +1,4 @@
-# Example app using ACAP and Rust
+# Example app using [ACAP] and [Rust]
 
 > [!IMPORTANT]
 > This project is an experiment provided "as is".
@@ -27,3 +27,6 @@ Other useful workflows are documented under the "Verbs" section of the [Makefile
 ## License
 
 [MIT](LICENSE)
+
+[ACAP]: https://axiscommunications.github.io/acap-documentation/
+[Rust]: https://doc.rust-lang.org/
