@@ -7,7 +7,9 @@
 # Name of package containing the app to be built.
 # Rust does not enforce that the path to the package matches the package name, but
 # this makefile does to keep things simple.
-# Keep in sync with `package.name` from `Cargo.toml`
+# Keep in sync with both
+# - `acapPackageConf.setup.appName` in `manifest.json`
+# - `package.name` in `Cargo.toml`
 PACKAGE ?= licensekey_handler
 
 # The architecture that will be assumed when interacting with the device.

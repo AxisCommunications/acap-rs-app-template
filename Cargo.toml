@@ -1,5 +1,7 @@
 [package]
-# Keep in sync with `PACKAGE` in `Makefile`
+# Keep in sync with both
+# - `acapPackageConf.setup.appName` in `manifest.json`
+# - `PACKAGE` in `Makefile`
 name = "licensekey_handler"
 version = "1.0.0"
 edition = "2021"
