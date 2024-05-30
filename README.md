@@ -16,14 +16,14 @@ Ensure global prerequisites are installed:
 * Rust e.g. [using rustup](https://www.rust-lang.org/tools/install)
 * Cross e.g. like `cargo install cross`
 
-Build the app and create `.eap` files in the `target/acap/` directory like
+Build the app and create `.eap` files in the `target/acap/` directory like:
 
 ```sh
 make build
 ```
 
 Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
-If Python package `mkhelp==0.2.1` is installed, they can be summarized like
+If Python package `mkhelp==0.2.1` is installed, they can be summarized like:
 
 ```console
 $ mkhelp print-docs Makefile help
