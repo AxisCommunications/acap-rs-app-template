@@ -10,7 +10,7 @@
 # Keep in sync with both
 # - `acapPackageConf.setup.appName` in `manifest.json`
 # - `package.name` in `Cargo.toml`
-PACKAGE ?= licensekey_handler
+PACKAGE ?= hello_world
 
 # The architecture that will be assumed when interacting with the device.
 ARCH ?= aarch64
