@@ -9,4 +9,4 @@ edition = "2021"
 [dependencies]
 log = "0.4.21"
 
-app-logging = { git = "https://github.com/AxisCommunications/acap-rs.git", branch="factor_out_app_logging" }
+app-logging = { git = "https://github.com/AxisCommunications/acap-rs.git", ref="9dec3688b02dd72884d32d455c0831113f9a2771" }

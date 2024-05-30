@@ -63,7 +63,7 @@ dependencies = [
 [[package]]
 name = "app-logging"
 version = "0.0.0"
-source = "git+https://github.com/AxisCommunications/acap-rs.git?branch=factor_out_app_logging#39354b45edc5766a035d6a0f586c7cf2061d18fb"
+source = "git+https://github.com/AxisCommunications/acap-rs.git#9dec3688b02dd72884d32d455c0831113f9a2771"
 dependencies = [
  "env_logger",
  "log",
