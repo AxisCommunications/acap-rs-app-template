@@ -47,32 +47,32 @@ axisecp/acap-native-sdk:1.12-$(ARCH)-ubuntu22.04
 ## Verbs
 ## =====
 
-## Build <PACKAGE> for all architectures
+## Build app for all architectures
 build: target/aarch64/$(PACKAGE)/_envoy target/armv7hf/$(PACKAGE)/_envoy
 	mkdir -p target/acap
 	cp $(patsubst %/_envoy,%/*.eap,$^) target/acap
 
-## Install <PACKAGE> on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Install app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 install:
 	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) install" \
 	| grep -v '^to start your application type$$' \
 	| grep -v '^  eap-install.sh start$$'
 
-## Remove <PACKAGE> from <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Remove app from <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 remove:
 	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) remove"
 
-## Start <PACKAGE> on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Start app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 start:
 	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) start" \
 	| grep -v '^to stop your application type$$' \
 	| grep -v '^  eap-install.sh stop$$'
 
-## Stop <PACKAGE> on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Stop app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 stop:
 	@ $(DOCKER_RUN) sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) stop"
 
-## Build and run <PACKAGE> directly on <DEVICE_IP> assuming architecture <ARCH>
+## Build and run app directly on <DEVICE_IP> assuming architecture <ARCH>
 ##
 ## Forwards the following environment variables to the remote process:
 ##
