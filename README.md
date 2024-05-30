@@ -1,11 +1,11 @@
-# Example app using [ACAP] and [Rust]
+# Example app using ACAP and Rust
 
 > [!IMPORTANT]
 > This project is an experiment provided "as is".
 > While we strive to maintain it, there's no guarantee of ongoing support, and it may become unmaintained in the future.
 > Your contributions are appreciated, and feel free to fork and continue the journey if needed.
 
-This is a template that can be used to create a new app using ACAP and Rust.
+This is a template that can be used to create a new app using [Axis Camera Application Platform (ACAP)](https://axiscommunications.github.io/acap-documentation/) and Rust.
 To contribute to the crates that this template uses, please see [acap-rs](https://github.com/AxisCommunications/acap-rs).
 
 ## Quickstart guide
@@ -50,6 +50,3 @@ Fixes:
 ## License
 
 [MIT](LICENSE)
-
-[ACAP]: https://axiscommunications.github.io/acap-documentation/
-[Rust]: https://doc.rust-lang.org/
