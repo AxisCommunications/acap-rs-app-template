@@ -12,7 +12,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install dependencies
-        run: cargo install cross
+        run: |
+          cargo install cross
+          cargo install --locked cargo-about@0.6.2
       - name: Run checks
         run: |
           make --always-make check_all
