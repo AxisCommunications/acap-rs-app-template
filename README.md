@@ -15,6 +15,7 @@ Ensure global prerequisites are installed:
 * Docker
 * Rust e.g. [using rustup](https://www.rust-lang.org/tools/install)
 * Cross e.g. like `cargo install cross`
+* `cargo-about` e.g. like `cargo install --locked cargo-about@0.6.2`
 
 Build the app and create `.eap` files in the `target/acap/` directory like:
 

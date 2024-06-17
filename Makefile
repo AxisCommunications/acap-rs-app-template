@@ -153,9 +153,12 @@ target/%/$(PACKAGE)/manifest.json: manifest.json
 	mkdir -p $(dir $@)
 	cp $< $@
 
-target/%/$(PACKAGE)/LICENSE: LICENSE
+target/%/$(PACKAGE)/LICENSE: Cargo.toml about.hbs
 	mkdir -p $(dir $@)
-	cp $< $@
+	cargo-about generate \
+		--manifest-path Cargo.toml \
+		--output-file $@ \
+		about.hbs
 
 # The target triple and the name of the docker image do not match, so
 # at some point we need to map one to the other. It might as well be here.
