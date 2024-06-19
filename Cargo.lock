@@ -3,6 +3,17 @@
 version = 3
 
 [[package]]
+name = "acap-logging"
+version = "0.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0609ee4b4fc001e913cfb10ebee12674ad0faa909b3af3510271962297bbcd6"
+dependencies = [
+ "env_logger",
+ "log",
+ "syslog",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "0.7.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -61,16 +72,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "app-logging"
-version = "0.0.0"
-source = "git+https://github.com/AxisCommunications/acap-rs.git#1c5083e41134644d2411f4e91551047c04902393"
-dependencies = [
- "env_logger",
- "log",
- "syslog",
-]
-
-[[package]]
 name = "colorchoice"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -121,7 +122,7 @@ dependencies = [
 name = "hello_world"
 version = "1.0.0"
 dependencies = [
- "app-logging",
+ "acap-logging",
  "log",
 ]
 
