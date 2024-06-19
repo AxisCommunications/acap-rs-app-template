@@ -28,6 +28,15 @@
     "no_proxy": "${localEnv:no_proxy}"
   },
 
+  // Configure tool-specific properties.
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": ["rust-lang.rust-analyzer"]
+    }
+  },
+
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": {
     "fixCargoPermissions": "sudo chown -R $(id -u):$(id -g) \"$CARGO_HOME\""
