@@ -36,7 +36,8 @@ RUN ./install_rust.sh \
  && rustup target add \
     aarch64-unknown-linux-gnu \
     thumbv7neon-unknown-linux-gnueabihf \
- && rm install_rust.sh rust-toolchain.toml
+ && rm install_rust.sh rust-toolchain.toml \
+ && cargo install --git https://github.com/AxisCommunications/acap-rs.git --rev 452583a5898e233ec3e2a391923b8971fe7f342b cargo-acap-sdk
 
 ENV \
     SYSROOT_AARCH64=/opt/axis/acapsdk/sysroots/aarch64 \
