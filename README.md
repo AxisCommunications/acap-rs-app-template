@@ -33,7 +33,7 @@ Ensure global prerequisites are installed:
 
 * Docker
 * Rust e.g. [using rustup](https://www.rust-lang.org/tools/install)
-* Cross e.g. like `cargo install cross`
+* Cross e.g. like `cargo install --locked cross@0.2.5`
 
 Useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
 If Python package `mkhelp==0.2.1` is installed, they can be summarized like:
