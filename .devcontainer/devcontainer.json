@@ -15,7 +15,8 @@
 
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {}
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
 
   // More info: https://aka.ms/dev-containers-non-root.
@@ -39,6 +40,7 @@
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": {
+    "symlinkGhCli": "ln -s ${containerWorkspaceFolder}/.devcontainer/gh $HOME/.config/gh",
     "fixCargoPermissions": "sudo chown -R $(id -u):$(id -g) \"$CARGO_HOME\""
   }
 }
