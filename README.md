@@ -10,7 +10,13 @@ To contribute to the crates that this template uses, please see [acap-rs](https:
 
 ## Quickstart guide
 
-Build the `hello_world` example and create `.eap` files in the `target/acap/` directory like
+The quickest way to build this example is to launch the dev container and run:
+
+```sh
+make build
+```
+
+If you prefer to not use dev containers, or the implementation in your favorite IDE is buggy, you can accomplish the same thing using `docker`:
 
 ```sh
 docker build --tag acap-rs-app-template .
@@ -21,11 +27,9 @@ docker run \
   --user $(id -u):$(id -g) \
   --volume $(pwd):$(pwd) \
   --workdir $(pwd) \
-  acap-rs \
-  make build PACKAGE=hello_world
+  acap-rs-app-template \
+  make build
 ```
-
-This works with any of the [example applications](#example-applications).
 
 ## Advanced setup
 
