@@ -10,13 +10,16 @@ To contribute to the crates that this template uses, please see [acap-rs](https:
 
 ## Quickstart guide
 
-The quickest way to build this example is to launch the dev container and run:
+The quickest way to build this example is to launch the dev container and run `make build`.
+Once it completes there should be two `.eap` files in `target/acap`:
 
-```sh
-make build
+```console
+$ ls -1 target/acap
+hello_world_1_0_0_aarch64.eap
+hello_world_1_0_0_armv7hf.eap
 ```
 
-If you prefer to not use dev containers, or the implementation in your favorite IDE is buggy, you can accomplish the same thing using `docker`:
+If you prefer to not use dev containers, or the implementation in your favorite IDE is buggy, the app can be built using only `docker`:
 
 ```sh
 docker build --tag acap-rs-app-template .
