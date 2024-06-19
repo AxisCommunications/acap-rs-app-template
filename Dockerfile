@@ -31,13 +31,22 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
 
-COPY docker/install_rust.sh rust-toolchain.toml ./
-RUN ./install_rust.sh \
- && rustup target add \
+COPY rust-toolchain.toml ./
+RUN curl -O "https://static.rust-lang.org/rustup/archive/1.26.0/x86_64-unknown-linux-gnu/rustup-init" \
+  && echo "0b2f6c8f85a3d02fde2efc0ced4657869d73fccfce59defb4e8d29233116e6db rustup-init" | sha256sum -c - \
+  && chmod +x rustup-init \
+  && ./rustup-init \
+    --default-host x86_64-unknown-linux-gnu \
+    --default-toolchain $(grep "channel" rust-toolchain.toml | cut -d '"' -f 2) \
+    --no-modify-path \
+    --profile minimal \
+    -y \
+  && rm rustup-init \
+  && rustup target add \
     aarch64-unknown-linux-gnu \
     thumbv7neon-unknown-linux-gnueabihf \
- && rm install_rust.sh rust-toolchain.toml \
- && cargo install --git https://github.com/AxisCommunications/acap-rs.git --rev 452583a5898e233ec3e2a391923b8971fe7f342b cargo-acap-sdk
+  && rm rust-toolchain.toml \
+  && cargo install --git https://github.com/AxisCommunications/acap-rs.git --rev 452583a5898e233ec3e2a391923b8971fe7f342b cargo-acap-sdk
 
 ENV \
     SYSROOT_AARCH64=/opt/axis/acapsdk/sysroots/aarch64 \
