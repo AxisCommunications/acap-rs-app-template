@@ -10,19 +10,32 @@ To contribute to the crates that this template uses, please see [acap-rs](https:
 
 ## Quickstart guide
 
+Build the `hello_world` example and create `.eap` files in the `target/acap/` directory like
+
+```sh
+docker build --tag acap-rs-app-template .
+docker run \
+  --interactive \
+  --rm \
+  --tty \
+  --user $(id -u):$(id -g) \
+  --volume $(pwd):$(pwd) \
+  --workdir $(pwd) \
+  acap-rs \
+  make build PACKAGE=hello_world
+```
+
+This works with any of the [example applications](#example-applications).
+
+## Advanced setup
+
 Ensure global prerequisites are installed:
 
 * Docker
 * Rust e.g. [using rustup](https://www.rust-lang.org/tools/install)
 * Cross e.g. like `cargo install cross`
 
-Build the app and create `.eap` files in the `target/acap/` directory like:
-
-```sh
-make build
-```
-
-Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
+Useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
 If Python package `mkhelp==0.2.1` is installed, they can be summarized like:
 
 ```console
