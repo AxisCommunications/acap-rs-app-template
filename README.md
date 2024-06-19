@@ -10,6 +10,25 @@ To contribute to the crates that this template uses, please see [acap-rs](https:
 
 ## Quickstart guide
 
+Build the `hello_world` example and create `.eap` files in the `target/acap/` directory like
+
+```sh
+docker build --tag acap-rs-app-template .
+docker run \
+  --interactive \
+  --rm \
+  --tty \
+  --user $(id -u):$(id -g) \
+  --volume $(pwd):$(pwd) \
+  --workdir $(pwd) \
+  acap-rs \
+  make build PACKAGE=hello_world
+```
+
+This works with any of the [example applications](#example-applications).
+
+## Advanced setup
+
 Ensure global prerequisites are installed:
 
 * Docker
@@ -17,13 +36,7 @@ Ensure global prerequisites are installed:
 * Cross e.g. like `cargo install cross`
 * `cargo-about` e.g. like `cargo install --locked cargo-about@0.6.2`
 
-Build the app and create `.eap` files in the `target/acap/` directory like:
-
-```sh
-make build
-```
-
-Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
+Useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
 If Python package `mkhelp==0.2.1` is installed, they can be summarized like:
 
 ```console
@@ -47,6 +60,14 @@ Fixes:
  fix_format: Attempt to fix formatting automatically
    fix_lint: Attempt to fix lints automatically
 ```
+
+## Troubleshooting
+
+The docker image may fail to build with the following included in the output:
+`/usr/bin/env: 'sh\r': No such file or directory`
+This is likely caused by `git` replacing POSIX newlines with Windows newlines in which case it can be resolved by either
+- cloning the code in Windows Subsystem for Linux (WSL), or
+- reconfiguring `git`.
 
 ## License
 
