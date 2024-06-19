@@ -35,8 +35,7 @@ PASS ?= pass
 .SUFFIXES: ;
 
 EAP_INSTALL = cd ${CURDIR}/target/$(ARCH)/$(PACKAGE)/ \
-&& cargo-acap-sdk containerize --docker-file $(CURDIR)/Dockerfile -- \
-sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) $@"
+&& sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) $@"
 
 
 ## Verbs
@@ -44,11 +43,11 @@ sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(
 
 ## Build app for all architectures
 build:
-	cargo-acap-sdk build
+	cargo-acap-sdk build --no-docker
 
 ## Install app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
 install:
-	cargo-acap-sdk install --docker-file ${CURDIR}/Dockerfile --address $(DEVICE_IP) --password $(PASS) --target $(ARCH) \
+	cargo-acap-sdk install --no-docker --address $(DEVICE_IP) --password $(PASS) --target $(ARCH) \
 	| grep -v '^to start your application type$$' \
 	| grep -v '^  eap-install.sh start$$'
 
@@ -77,7 +76,7 @@ stop:
 ## * The device is added to `knownhosts`.
 run:
 	cargo-acap-sdk run \
-		--docker-file $(CURDIR)/Dockerfile \
+		--no-docker \
 		--password $(PASS) \
 		--target $(ARCH) \
 		--address $(DEVICE_IP) \
@@ -93,7 +92,7 @@ run:
 ## * The device is added to `knownhosts`.
 test:
 	cargo-acap-sdk test \
-		--docker-file $(CURDIR)/Dockerfile \
+		--no-docker \
 		--password $(PASS) \
 		--target $(ARCH) \
 		--address $(DEVICE_IP) \
@@ -114,7 +113,7 @@ check_build:
 
 ## Check that docs can be built
 check_docs:
-	cargo-acap-sdk containerize --docker-file $(CURDIR)/Dockerfile --docker-env RUSTFLAGS="-Dwarnings" -- cargo doc \
+	RUSTFLAGS="-Dwarnings" cargo doc \
 		--document-private-items \
 		--no-deps \
 		--target aarch64-unknown-linux-gnu
@@ -127,7 +126,7 @@ check_format:
 
 ## Check that the code is free of lints
 check_lint:
-	cargo-acap-sdk containerize --docker-file $(CURDIR)/Dockerfile --docker-env RUSTFLAGS="-Dwarnings" -- cargo clippy \
+	RUSTFLAGS="-Dwarnings" cargo clippy \
 		--all-targets \
 		--no-deps \
 		--target aarch64-unknown-linux-gnu
