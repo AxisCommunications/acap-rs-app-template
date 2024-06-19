@@ -25,7 +25,6 @@ RUN apt-get update \
     inetutils-ping \
     pkg-config \
     python3-jsonschema \
-    wget \
  && rm -rf /var/lib/apt/lists/*
 
 ENV RUSTUP_HOME=/usr/local/rustup \
