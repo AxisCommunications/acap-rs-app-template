@@ -10,22 +10,25 @@
 # Keep in sync with both
 # - `acapPackageConf.setup.appName` in `manifest.json`
 # - `package.name` in `Cargo.toml`
-PACKAGE ?= hello_world
+export AXIS_PACKAGE ?= hello_world
 
 # The architecture that will be assumed when interacting with the device.
-ARCH ?= aarch64
+export AXIS_DEVICE_ARCH ?= aarch64
 
 # The IP address of the device to interact with.
-DEVICE_IP ?= 192.168.0.90
+export AXIS_DEVICE_IP ?= 192.168.0.90
+
+# The username to use when interacting with the device.
+export AXIS_DEVICE_USER ?= root
 
 # The password to use when interacting with the device.
-PASS ?= pass
+export AXIS_DEVICE_PASS ?= pass
 
 # Other
 # -----
 
 # Have zero effect by default to prevent accidental changes.
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := none
 
 # Delete targets that fail to prevent subsequent attempts incorrectly assuming
 # the target is up to date.
@@ -34,69 +37,79 @@ PASS ?= pass
 # Prevent pesky default rules from creating unexpected dependency graphs.
 .SUFFIXES: ;
 
-EAP_INSTALL = cd ${CURDIR}/target/$(ARCH)/$(PACKAGE)/ \
-&& sh -c ". /opt/axis/acapsdk/environment-setup-* && eap-install.sh $(DEVICE_IP) $(PASS) $@"
+# It doesn't matter which SDK is sourced for installing, but using a wildcard would fail since there are multiple in the container.
+EAP_INSTALL = cd $(CURDIR)/target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)/ \
+&& . /opt/axis/acapsdk/environment-setup-cortexa53-crypto-poky-linux && eap-install.sh $(AXIS_DEVICE_IP) $(AXIS_DEVICE_PASS) $@
 
 
 ## Verbs
 ## =====
 
-## Build app for all architectures
-build:
-	cargo-acap-sdk build --no-docker
+none:;
 
-## Install app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Reset <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> to a clean state suitable for development and testing.
+reinit:
+	RUST_LOG=info device-manager reinit
+
+## Build app for <AXIS_DEVICE_ARCH>
+build:
+	cargo-acap-build --target $(AXIS_DEVICE_ARCH) -- -p $(AXIS_PACKAGE)
+
+## Install app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
 install:
-	cargo-acap-sdk install --no-docker --address $(DEVICE_IP) --password $(PASS) --target $(ARCH) \
+	@ $(EAP_INSTALL) \
 	| grep -v '^to start your application type$$' \
 	| grep -v '^  eap-install.sh start$$'
 
-## Remove app from <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Remove app from <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
 remove:
 	@ $(EAP_INSTALL)
 
-## Start app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Start app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
 start:
-	@ # Don't match the line endings because docker replace LF with CR + LF when given `--tty`
 	@ $(EAP_INSTALL) \
-	| grep -v '^to stop your application type' \
-	| grep -v '^  eap-install.sh stop'
+	| grep -v '^to stop your application type$$' \
+	| grep -v '^  eap-install.sh stop$$'
 
-## Stop app on <DEVICE_IP> using password <PASS> and assuming architecture <ARCH>
+## Stop app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
 stop:
 	@ $(EAP_INSTALL)
 
-## Build and run app directly on <DEVICE_IP> assuming architecture <ARCH>
+## Build and run app directly on <AXIS_DEVICE_IP> assuming architecture <AXIS_DEVICE_ARCH>
 ##
 ## Prerequisites:
 ##
+## * app is recognized by `cargo-acap-build` as an ACAP app.
 ## * The app is installed on the device.
 ## * The app is stopped.
 ## * The device has SSH enabled the ssh user root configured.
-## * The device is added to `knownhosts`.
 run:
-	cargo-acap-sdk run \
-		--no-docker \
-		--password $(PASS) \
-		--target $(ARCH) \
-		--address $(DEVICE_IP) \
-		--package $(PACKAGE)
+	cargo-acap-build --target $(AXIS_DEVICE_ARCH) -- -p $(AXIS_PACKAGE)
+	acap-ssh-utils patch target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)/*.eap
+	acap-ssh-utils run-app \
+		--environment RUST_LOG=debug \
+		--environment RUST_LOG_STYLE=always \
+		$(AXIS_PACKAGE)
 
-## Build and execute unit tests on <DEVICE_IP> assuming architecture <ARCH>
+## Build and execute unit tests for app on <AXIS_DEVICE_IP> assuming architecture <AXIS_DEVICE_ARCH>
 ##
 ## Prerequisites:
 ##
+## * app is recognized by `cargo-acap-build` as an ACAP app.
 ## * The app is installed on the device.
 ## * The app is stopped.
 ## * The device has SSH enabled the ssh user root configured.
-## * The device is added to `knownhosts`.
 test:
-	cargo-acap-sdk test \
-		--no-docker \
-		--password $(PASS) \
-		--target $(ARCH) \
-		--address $(DEVICE_IP) \
-		--package $(PACKAGE)
+	# The `scp` command below needs the wildcard to match exactly one file.
+	rm -r target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)-*/$(AXIS_PACKAGE) ||:
+	cargo-acap-build --target $(AXIS_DEVICE_ARCH) -- -p $(AXIS_PACKAGE) --tests
+	acap-ssh-utils patch target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)-*/*.eap
+	acap-ssh-utils run-app \
+		--environment RUST_LOG=debug \
+		--environment RUST_LOG_STYLE=always \
+		$(AXIS_PACKAGE) \
+		-- \
+		--test-threads=1
 
 ## Checks
 ## ------
@@ -107,16 +120,16 @@ check_all: check_build check_docs check_format check_lint
 
 ## Check that all crates can be built
 check_build:
-	cargo-acap-sdk build
-
+	cargo-acap-build --target aarch64
 .PHONY: check_build
 
 ## Check that docs can be built
 check_docs:
-	RUSTFLAGS="-Dwarnings" cargo doc \
+	RUSTDOCFLAGS="-Dwarnings" cargo doc \
 		--document-private-items \
 		--no-deps \
-		--target aarch64-unknown-linux-gnu
+		--target aarch64-unknown-linux-gnu \
+		--workspace
 .PHONY: check_docs
 
 ## Check that the code is formatted correctly
@@ -126,10 +139,12 @@ check_format:
 
 ## Check that the code is free of lints
 check_lint:
-	RUSTFLAGS="-Dwarnings" cargo clippy \
+	cargo clippy \
 		--all-targets \
 		--no-deps \
-		--target aarch64-unknown-linux-gnu
+		--target aarch64-unknown-linux-gnu \
+		-- \
+		-Dwarnings
 .PHONY: check_lint
 
 ## Fixes
