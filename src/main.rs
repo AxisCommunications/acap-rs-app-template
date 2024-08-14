@@ -7,7 +7,7 @@
 use log::info;
 
 fn main() {
-    app_logging::init_logger();
+    acap_logging::init_logger();
     info!("Hello World!");
 }
 

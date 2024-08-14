@@ -1,46 +1,14 @@
-// For format details, see https://aka.ms/devcontainer.json.
 {
-  "name": "rust-acap-sdk",
-
-  // More info: https://containers.dev/guide/dockerfile
-  "build": {
-    "dockerfile": "./Dockerfile",
-    "context": "..",
-    "args": {
-      "http_proxy": "${localEnv:http_proxy}",
-      "https_proxy": "${localEnv:https_proxy}",
-      "no_proxy": "${localEnv:no_proxy}"
+    "name": "acap-rs-app-template",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {},
+    },
+    "remoteUser": "${localEnv:USER}",
+    "containerEnv": {
+        "CARGO_HOME": "/home/${localEnv:USER}/.cargo"
     }
-  },
-
-  // Features to add to the dev container. More info: https://containers.dev/features.
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/devcontainers/features/github-cli:1": {}
-  },
-
-  // More info: https://aka.ms/dev-containers-non-root.
-  "remoteUser": "${localEnv:USER}",
-
-  // More info: https://containers.dev/implementors/spec/#environment-variables
-  "containerEnv": {
-    "http_proxy": "${localEnv:http_proxy}",
-    "https_proxy": "${localEnv:https_proxy}",
-    "no_proxy": "${localEnv:no_proxy}"
-  },
-
-  // Configure tool-specific properties.
-  "customizations": {
-    // Configure properties specific to VS Code.
-    "vscode": {
-      // Add the IDs of extensions you want installed when the container is created.
-      "extensions": ["rust-lang.rust-analyzer"]
-    }
-  },
-
-  // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": {
-    "symlinkGhCli": "ln -s ${containerWorkspaceFolder}/.devcontainer/gh $HOME/.config/gh",
-    "fixCargoPermissions": "sudo chown -R $(id -u):$(id -g) \"$CARGO_HOME\""
-  }
 }

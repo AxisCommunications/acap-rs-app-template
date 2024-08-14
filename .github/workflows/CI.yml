@@ -12,7 +12,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install dependencies
-        run: cargo install --path crates/cargo-acap-sdk
+        run: cargo install --locked cross@0.2.5
       - name: Run checks
         run: |
           make --always-make check_all

@@ -7,6 +7,6 @@ version = "1.0.0"
 edition = "2021"
 
 [dependencies]
+acap-logging = "0.0.0"
 log = "0.4.21"
 
-app-logging = { git = "https://github.com/AxisCommunications/acap-rs.git", ref="9dec3688b02dd72884d32d455c0831113f9a2771" }
