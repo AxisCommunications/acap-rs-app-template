@@ -15,8 +15,7 @@ Once it completes there should be two `.eap` files in `target/acap`:
 
 ```console
 $ ls -1 target/acap
-hello_world_1_0_0_aarch64.eap
-hello_world_1_0_0_armv7hf.eap
+hello_world_0_1_0_aarch64.eap
 ```
 
 Useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
