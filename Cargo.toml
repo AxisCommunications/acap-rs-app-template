@@ -1,9 +1,11 @@
 [package]
-# Keep in sync with both
+# Keep in sync with:
 # - `acapPackageConf.setup.appName` in `manifest.json`
 # - `PACKAGE` in `Makefile`
 name = "hello_world"
-version = "1.0.0"
+# Keep in sync with:
+# - `acapPackageConf.setup.version` in `manifest.json`
+version = "0.1.0"
 edition = "2021"
 
 [dependencies]
