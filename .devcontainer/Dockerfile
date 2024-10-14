@@ -38,6 +38,7 @@ ENV PATH=/usr/local/cargo/bin:$PATH \
     RUSTUP_HOME=/usr/local/rustup
 
 COPY rust-toolchain.toml ./
+# Consider using `--rev` with a commit ID instead of a tag to protect against supply chain attacks.
 RUN curl \
     --output /tmp/rustup-init \
     "https://static.rust-lang.org/rustup/archive/1.26.0/x86_64-unknown-linux-gnu/rustup-init" \
@@ -53,7 +54,7 @@ RUN curl \
   && cargo install \
      --locked \
      --git https://github.com/AxisCommunications/acap-rs.git \
-     --rev 5148b09e77e321a215a18f2f4ab75ec64839265c \
+     --rev cargo-acap-sdk-v0.2.0 \
      acap-ssh-utils \
      cargo-acap-build \
      cargo-acap-sdk \
