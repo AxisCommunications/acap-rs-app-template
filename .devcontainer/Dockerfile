@@ -31,6 +31,7 @@ RUN apt-get update \
     libssl-dev \
     pkg-config \
     python3-jsonschema \
+    ssh \
     sshpass
 
 ENV PATH=/usr/local/cargo/bin:$PATH \
