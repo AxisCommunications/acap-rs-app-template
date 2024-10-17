@@ -37,10 +37,6 @@ export AXIS_DEVICE_PASS ?= pass
 # Prevent pesky default rules from creating unexpected dependency graphs.
 .SUFFIXES: ;
 
-# It doesn't matter which SDK is sourced for installing, but using a wildcard would fail since there are multiple in the container.
-EAP_INSTALL = cd $(CURDIR)/target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)/ \
-&& . /opt/axis/acapsdk/environment-setup-cortexa53-crypto-poky-linux && eap-install.sh $(AXIS_DEVICE_IP) $(AXIS_DEVICE_PASS) $@
-
 
 ## Verbs
 ## =====
