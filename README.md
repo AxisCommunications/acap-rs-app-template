@@ -34,7 +34,7 @@ RUST_LOG=info device-manager reinit
 cargo-acap-sdk install
 
 # Build the app, patch the previously installed app on the device, and run with stdout attached
-cargo-acap-run
+cargo-acap-sdk run
 ```
 
 Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
