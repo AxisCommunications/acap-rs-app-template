@@ -27,8 +27,8 @@ export AXIS_DEVICE_IP=<AXIS_DEVICE_IP>
 export AXIS_DEVICE_USER=<AXIS_DEVICE_USER>
 export AXIS_DEVICE_PASS=<AXIS_DEVICE_PASS>
 
-# Restore the device to a clean state
-device-manager reinit
+# Restore the device to a known state
+RUST_LOG=info device-manager reinit
 
 # Build the app and install on the device
 cargo-acap-sdk install
