@@ -17,4 +17,4 @@ jobs:
         run: |
           devcontainer up --workspace-folder .
           devcontainer exec --workspace-folder . make --always-make check_all
-          devcontainer exec --workspace-folder . make build
+          devcontainer exec --workspace-folder . cargo-acap-build --target aarch64
