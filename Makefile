@@ -37,79 +37,11 @@ export AXIS_DEVICE_PASS ?= pass
 # Prevent pesky default rules from creating unexpected dependency graphs.
 .SUFFIXES: ;
 
-# It doesn't matter which SDK is sourced for installing, but using a wildcard would fail since there are multiple in the container.
-EAP_INSTALL = cd $(CURDIR)/target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)/ \
-&& . /opt/axis/acapsdk/environment-setup-cortexa53-crypto-poky-linux && eap-install.sh $(AXIS_DEVICE_IP) $(AXIS_DEVICE_PASS) $@
-
 
 ## Verbs
 ## =====
 
 none:;
-
-## Reset <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> to a clean state suitable for development and testing.
-reinit:
-	RUST_LOG=info device-manager reinit
-
-## Build app for <AXIS_DEVICE_ARCH>
-build:
-	cargo-acap-build --target $(AXIS_DEVICE_ARCH) -- -p $(AXIS_PACKAGE)
-
-## Install app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-install:
-	@ $(EAP_INSTALL) \
-	| grep -v '^to start your application type$$' \
-	| grep -v '^  eap-install.sh start$$'
-
-## Remove app from <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-remove:
-	@ $(EAP_INSTALL)
-
-## Start app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-start:
-	@ $(EAP_INSTALL) \
-	| grep -v '^to stop your application type$$' \
-	| grep -v '^  eap-install.sh stop$$'
-
-## Stop app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-stop:
-	@ $(EAP_INSTALL)
-
-## Build and run app directly on <AXIS_DEVICE_IP> assuming architecture <AXIS_DEVICE_ARCH>
-##
-## Prerequisites:
-##
-## * app is recognized by `cargo-acap-build` as an ACAP app.
-## * The app is installed on the device.
-## * The app is stopped.
-## * The device has SSH enabled the ssh user root configured.
-run:
-	cargo-acap-build --target $(AXIS_DEVICE_ARCH) -- -p $(AXIS_PACKAGE)
-	acap-ssh-utils patch target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)/*.eap
-	acap-ssh-utils run-app \
-		--environment RUST_LOG=debug \
-		--environment RUST_LOG_STYLE=always \
-		$(AXIS_PACKAGE)
-
-## Build and execute unit tests for app on <AXIS_DEVICE_IP> assuming architecture <AXIS_DEVICE_ARCH>
-##
-## Prerequisites:
-##
-## * app is recognized by `cargo-acap-build` as an ACAP app.
-## * The app is installed on the device.
-## * The app is stopped.
-## * The device has SSH enabled the ssh user root configured.
-test:
-	# The `scp` command below needs the wildcard to match exactly one file.
-	rm -r target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)-*/$(AXIS_PACKAGE) ||:
-	cargo-acap-build --target $(AXIS_DEVICE_ARCH) -- -p $(AXIS_PACKAGE) --tests
-	acap-ssh-utils patch target/$(AXIS_DEVICE_ARCH)/$(AXIS_PACKAGE)-*/*.eap
-	acap-ssh-utils run-app \
-		--environment RUST_LOG=debug \
-		--environment RUST_LOG_STYLE=always \
-		$(AXIS_PACKAGE) \
-		-- \
-		--test-threads=1
 
 ## Checks
 ## ------

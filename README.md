@@ -10,29 +10,38 @@ To contribute to the crates that this template uses, please see [acap-rs](https:
 
 ## Quickstart guide
 
-The quickest way to build this example is to launch the dev container and run `make build`.
+The quickest way to build this example is to launch the dev container and run `cargo-acap-build`.
 Once it completes there should be two `.eap` files in `target/acap`:
 
 ```console
 $ ls -1 target/acap
 hello_world_0_1_0_aarch64.eap
+hello_world_0_1_0_armv7hf.eap
 ```
 
-Useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
-If Python package `mkhelp==0.2.1` is installed, they can be summarized like:
+If you have a device that you would like to run the app on, the recommended workflow is:
+
+```shell
+# Specify which device to target and how to authenticate
+export AXIS_DEVICE_IP=<AXIS_DEVICE_IP>
+export AXIS_DEVICE_USER=<AXIS_DEVICE_USER>
+export AXIS_DEVICE_PASS=<AXIS_DEVICE_PASS>
+
+# Restore the device to a known state
+RUST_LOG=info device-manager reinit
+
+# Build the app and install on the device
+cargo-acap-sdk install
+
+# Build the app, patch the previously installed app on the device, and run with stdout attached
+cargo-acap-sdk run
+```
+
+Other useful workflows are documented under the "Verbs" section of the [Makefile](./Makefile).
+If Rust crate `mkhelp==0.2.3` is installed, they can be summarized like:
 
 ```console
-$ mkhelp print-docs Makefile help
-Verbs:
-  reinit: Reset <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> to a clean state suitable for development and testing.
-   build: Build app for <AXIS_DEVICE_ARCH>
- install: Install app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-  remove: Remove app from <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-   start: Start app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-    stop: Stop app on <AXIS_DEVICE_IP> using password <AXIS_DEVICE_PASS> and assuming architecture <AXIS_DEVICE_ARCH>
-     run: Build and run app directly on <AXIS_DEVICE_IP> assuming architecture <AXIS_DEVICE_ARCH>
-    test: Build and execute unit tests for app on <AXIS_DEVICE_IP> assuming architecture <AXIS_DEVICE_ARCH>
-
+$ mkhelp Makefile
 Checks:
     check_all: Run all other checks
   check_build: Check that all crates can be built
@@ -45,25 +54,14 @@ Fixes:
    fix_lint: Attempt to fix lints automatically
 ```
 
-The commands used by the workflows can be listed in the individual programs:
+## Programs
 
-```console
-$ acap-ssh-utils
-Utilities for interacting with Axis devices over SSH.
+The dev-container includes a few tools in addition to those that come with the ACAP Native SDK.
+The help texts from each are documented below along with some additional notes.
 
-Usage: acap-ssh-utils --host <HOST> --user <USER> --pass <PASS> <COMMAND>
+### Porcelain
 
-Commands:
-  patch      Patch app on device
-  run-app    Run app on device, sending output to the terminal
-  run-other  Run any executable on device, sending output to the terminal
-  help       Print this message or the help of the given subcommand(s)
-
-Options:
-      --host <HOST>  Hostname or IP address of the device [env: AXIS_DEVICE_IP=]
-  -u, --user <USER>  The username to use for the ssh connection [env: AXIS_DEVICE_USER=]
-  -p, --pass <PASS>  The password to use for the ssh connection [env: AXIS_DEVICE_PASS=]
-```
+These programs have an ergonomic interface and should fit most users most of the time.
 
 ```console
 $ cargo-acap-sdk
@@ -82,6 +80,43 @@ Commands:
   remove       Remove app form device
   completions  Print shell completion script for this program
   help         Print this message or the help of the given subcommand(s)
+```
+
+Note that some commands must be run before other as illustrated by this state diagram:
+
+```mermaid
+stateDiagram
+    baseline --> stopped: install
+    stopped --> stopped: run/test
+    stopped --> running: start
+    stopped --> baseline: remove
+    running --> stopped: stop
+    running --> baseline: remove
+```
+
+Note that the shell completions may not work when using the program as a cargo plugin like
+`cargo acap-sdk` (note the difference between ` ` and `-`).
+
+### Plumbing
+
+These programs have a flexible interface making them handy when the porcelain is too rigid.
+
+```console
+$ acap-ssh-utils
+Utilities for interacting with Axis devices over SSH.
+
+Usage: acap-ssh-utils --host <HOST> --user <USER> --pass <PASS> <COMMAND>
+
+Commands:
+  patch      Patch app on device
+  run-app    Run app on device, sending output to the terminal
+  run-other  Run any executable on device, sending output to the terminal
+  help       Print this message or the help of the given subcommand(s)
+
+Options:
+      --host <HOST>  Hostname or IP address of the device [env: AXIS_DEVICE_IP=]
+  -u, --user <USER>  The username to use for the ssh connection [env: AXIS_DEVICE_USER=]
+  -p, --pass <PASS>  The password to use for the ssh connection [env: AXIS_DEVICE_PASS=]
 ```
 
 ```console
@@ -113,9 +148,6 @@ Options:
   -u, --user <USER>  The username to use for the ssh connection [env: AXIS_DEVICE_USER=]
   -p, --pass <PASS>  The password to use for the ssh connection [env: AXIS_DEVICE_PASS=]
 ```
-
-Note that the shell completions may not work when using the program as a cargo plugin like
-`cargo acap-sdk` (note the difference between ` ` and `-`).
 
 ## License
 
