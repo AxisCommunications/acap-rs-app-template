@@ -9,6 +9,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-acap-logging = "0.0.0"
+acap-logging = "0.1.0"
 log = "0.4.21"
-
