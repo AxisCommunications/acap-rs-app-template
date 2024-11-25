@@ -52,14 +52,10 @@ RUN curl \
      -y \
   && rm /tmp/rustup-init \
   && rustup show \
-  && cargo install \
-     --locked \
-     --git https://github.com/AxisCommunications/acap-rs.git \
-     --rev cargo-acap-sdk-v0.2.0 \
-     acap-ssh-utils \
-     cargo-acap-build \
-     cargo-acap-sdk \
-     device-manager \
+  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev acap-ssh-utils-v0.1.0 acap-ssh-utils \
+  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev cargo-acap-build-v0.1.0 cargo-acap-build \
+  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev cargo-acap-sdk-v0.3.0 cargo-acap-sdk \
+  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev device-manager-v0.1.0 device-manager \
   && rm rust-toolchain.toml
 
 ENV \
