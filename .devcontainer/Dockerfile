@@ -39,24 +39,34 @@ ENV PATH=/usr/local/cargo/bin:$PATH \
     RUSTUP_HOME=/usr/local/rustup
 
 COPY rust-toolchain.toml ./
+# If neither `CARGO_HOME` nor `HOME` is set when launching a container, then cargo will try to
+# download crates to this directory. If launched with the `--user` option then this will fail.
+# TODO: Replace the example in the README with something that does not mount any volumes.
+# When installing Rust binaries the source is downloaded to `$CARGO_HOME/registry`.
+# If the app does not have a lot of the same dependencies, then this is wasted space.
+# TODO: Consider removing the content of `CARGO_HOME` instead of `chmod`ing it;
 # Consider using `--rev` with a commit ID instead of a tag to protect against supply chain attacks.
 RUN curl \
     --output /tmp/rustup-init \
     "https://static.rust-lang.org/rustup/archive/1.26.0/x86_64-unknown-linux-gnu/rustup-init" \
-  && echo "0b2f6c8f85a3d02fde2efc0ced4657869d73fccfce59defb4e8d29233116e6db /tmp/rustup-init" \
-   | sha256sum -c - \
-  && chmod +x /tmp/rustup-init \
-  && ./tmp/rustup-init \
-     --no-modify-path \
-     --no-update-default-toolchain \
-     -y \
-  && rm /tmp/rustup-init \
-  && rustup show \
-  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev acap-ssh-utils-v0.1.0 acap-ssh-utils \
-  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev cargo-acap-build-v0.1.0 cargo-acap-build \
-  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev cargo-acap-sdk-v0.3.0 cargo-acap-sdk \
-  && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev device-manager-v0.1.0 device-manager \
-  && rm rust-toolchain.toml
+ && echo "0b2f6c8f85a3d02fde2efc0ced4657869d73fccfce59defb4e8d29233116e6db /tmp/rustup-init" \
+  | sha256sum -c - \
+ && chmod +x /tmp/rustup-init \
+ && ./tmp/rustup-init \
+    --no-modify-path \
+    --no-update-default-toolchain \
+    -y \
+ && rm /tmp/rustup-init \
+ && rustup show \
+ && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev acap-ssh-utils-v0.1.0 acap-ssh-utils \
+ && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev cargo-acap-build-v0.1.0 cargo-acap-build \
+ && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev cargo-acap-sdk-v0.3.0 cargo-acap-sdk \
+ && cargo install --locked --git https://github.com/AxisCommunications/acap-rs.git --rev device-manager-v0.1.0 device-manager \
+ && rm rust-toolchain.toml \
+ && mkdir /.cargo \
+ && chmod a+w /.cargo/ \
+ && find $CARGO_HOME $RUSTUP_HOME -type d -exec chmod a+rwx {} + \
+ && find $CARGO_HOME $RUSTUP_HOME -type f -exec chmod a+rw {} +
 
 ENV \
     SYSROOT_AARCH64=/opt/axis/acapsdk/sysroots/aarch64 \
@@ -77,13 +87,3 @@ ENV \
     PKG_CONFIG_LIBDIR_thumbv7neon_unknown_linux_gnueabihf="${SYSROOT_ARMV7HF}/usr/lib/pkgconfig:${SYSROOT_ARMV7HF}/usr/share/pkgconfig" \
     PKG_CONFIG_PATH_thumbv7neon_unknown_linux_gnueabihf="${SYSROOT_ARMV7HF}/usr/lib/pkgconfig:${SYSROOT_ARMV7HF}/usr/share/pkgconfig" \
     PKG_CONFIG_SYSROOT_DIR_thumbv7neon_unknown_linux_gnueabihf="${SYSROOT_ARMV7HF}"
-
-# If neither `CARGO_HOME` nor `HOME` is set when launching a container, then cargo will try to
-# download crates to this directory. If launched with the `--user` option then this will fail.
-# TODO: Replace the example in the README with something that does not mount any volumes.
-RUN mkdir /.cargo \
- && chmod a+w /.cargo/
-
-# TODO: Consider removing the content of `CARGO_HOME` instead of `chmod`ing it;
-RUN find $CARGO_HOME $RUSTUP_HOME -type d -exec chmod a+rwx {} +
-RUN find $CARGO_HOME $RUSTUP_HOME -type f -exec chmod a+rw {} +
